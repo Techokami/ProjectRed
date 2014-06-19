@@ -26,8 +26,8 @@ object GuiLib
     def createGrid(x:Int, y:Int, w:Int, h:Int, dx:Int, dy:Int) =
     {
         var grid = Seq[(Int, Int)]()
-        for (ix <- 0 until dx) for (iy <- 0 until dy)
-            grid :+= ((x+ix*dx) -> (y+iy+dy))
+        for (iy <- 0 until h) for (ix <- 0 until w)
+            grid :+= ((x+ix*dx) -> (y+iy*dy))
         grid
     }
 

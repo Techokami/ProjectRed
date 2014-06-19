@@ -15,6 +15,10 @@ import org.lwjgl.opengl.GL11
 import mrtjp.projectred.core.libmc.{PRLib, PRColors}
 import codechicken.lib.render.uv.{UVTransformation, UV, UVScale, IconTransformation}
 import net.minecraft.init.Blocks
+import net.minecraftforge.client.IItemRenderer
+import net.minecraft.item.ItemStack
+import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
+import codechicken.lib.render.CCRenderState.IVertexOperation
 
 object RenderPipe
 {
@@ -32,7 +36,6 @@ object RenderPipe
     var sideModelsRS = new Array[CCModel](6)
     var centerModelsRS = new Array[CCModel](4)
 
-    private def generate()
     {
         val gen = new PipeModelGenerator
         sideModels = gen.sideModels
@@ -43,20 +46,16 @@ object RenderPipe
         sideModelsRS = rsgen.sideModels
         centerModelsRS = rsgen.centerModels
     }
-    generate()
 
     def render(p:FlowingPipePart, pos:Vector3)
     {
-        val t = new Translation(pos)
+        val t = pos.translation()
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
-        val connMap = p.connMap
+        val connMap = p.connMap&0x3F
 
-        if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
+        if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3)
-            {
-                centerModels(a).render(t, uvt)
-            }
+            if ((connMap>>a*2) == 3) centerModels(a).render(t, uvt)
         }
         else centerModels(3).render(t, uvt)
 
@@ -70,17 +69,18 @@ object RenderPipe
 
     private def renderRSWiring(p:FlowingPipePart, t:Translation, signal:Int)
     {
-        val colour = new ColourMultiplier((signal&0xFF)/2+60<<24|0xFF)
+        val colour = ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF)
         val uvt2 = new IconTransformation(PipeDefs.BASIC.sprites(1))
-        val connMap = p.connMap
+        val connMap = p.connMap&0x3F
 
-        if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
+        if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
             if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour)
         }
         else centerModelsRS(3).render(t, uvt2, colour)
 
-        for (s <- 0 until 6) if ((connMap&1<<s) != 0) sideModelsRS(s).render(t, uvt2, colour)
+        for (s <- 0 until 6) if ((connMap&1<<s) != 0)
+            sideModelsRS(s).render(t, uvt2, colour)
     }
 
     def renderBreakingOverlay(icon:IIcon, pipe:FlowingPipePart)
@@ -91,12 +91,10 @@ object RenderPipe
             BlockRenderer.renderCuboid(box, 0)
     }
 
-    def renderInv(t:Transformation, icon:IIcon)
+    def renderInv(ops:IVertexOperation*)
     {
-        val uvt = new IconTransformation(icon)
-        CCRenderState.setColour(-1)
-        centerModels(3).render(t, uvt)
-        for (s <- Seq(0, 1)) sideModels(s).render(t, uvt)
+        centerModels(3).render(ops:_*)
+        for (s <- 0 to 1) sideModels(s).render(ops:_*)
     }
 
     def renderItemFlow(p:FlowingPipePart, pos:Vector3, frame:Float)
@@ -140,12 +138,14 @@ object RenderPipe
 
         dummyEntityItem.setEntityItemStack(itemstack)
         customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
+
         prepareRenderState()
         GL11.glEnable(GL11.GL_LIGHTING)
-        Tessellator.instance.setColorRGBA_I(PRColors.get(r.priority.color).rgb, 32)
         GL11.glScalef(0.5f, 0.5f, 0.5f)
 
         CCRenderState.setPipeline(new Translation(-0.5, -0.5, -0.5))
+        CCRenderState.alphaOverride = 32
+        CCRenderState.baseColour = PRColors.get(r.priority.color).rgba
         BlockRenderer.renderCuboid(Cuboid6.full, 0)
 
         restoreRenderState()
@@ -161,6 +161,7 @@ object RenderPipe
         GL11.glDisable(GL11.GL_CULL_FACE)
         GL11.glDepthMask(false)
         CCRenderState.reset()
+        CCRenderState.setDynamic()
         CCRenderState.startDrawing()
     }
 
@@ -188,7 +189,7 @@ object RenderPipe
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         CCRenderState.reset()
         TextureUtils.bindAtlas(0)
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.setBrightness(part.world, pos.x, pos.y, pos.z)
         CCRenderState.alphaOverride = 127
         CCRenderState.startDrawing()
@@ -233,7 +234,7 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
 
     def generateCrossExclusiveModels()
     {
-        val model = CCModel.quadModel(48)
+        val model = CCModel.quadModel(32)
         model.verts(0) = new Vertex5(0.5-w, 0.5-w, 0.5-w, 0, 16)
         model.verts(1) = new Vertex5(0.5+w, 0.5-w, 0.5-w, 8, 16)
         model.verts(2) = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8, 8)
@@ -244,8 +245,6 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
         model.verts(7) = new Vertex5(0.5-w, 0.5-w+d, 0.5-w, 0, 8)
 
         for (s <- 1 until 4) model.generateSidedPart(0, s, Vector3.center, 0, 8*s, 8)
-
-        for (i <- 0 until 48) if (model.verts(i) == null) model.verts(i) = new Vertex5
 
         centerModels(0) = model.copy.apply(Rotation.sideOrientation(2, 1).at(Vector3.center))
         centerModels(1) = model.copy.apply(Rotation.sideOrientation(0, 1).at(Vector3.center))
@@ -285,16 +284,13 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
 
     def finishModels()
     {
-        def finishModel(m:CCModel) =
+        for (m <- centerModels++sideModels)
         {
             m.apply(new UVScale(1/16D))
             m.shrinkUVs(0.0005)
             m.computeNormals
             m.computeLighting(LightModel.standardLightModel)
-            m
         }
-
-        for (m <- sideModels++centerModels) finishModel(m)
     }
 
     def applyScale(scale:Double)
@@ -375,5 +371,40 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
                 }
             }
         }
+    }
+}
+
+object PipeItemRenderer extends IItemRenderer
+{
+    def handleRenderType(item:ItemStack, r:ItemRenderType) = true
+    def shouldUseRenderHelper(r:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
+
+    def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
+    {
+        val damage = item.getItemDamage
+        import ItemRenderType._
+        rtype match
+        {
+            case ENTITY => renderWireInventory(damage, -.5f, 0f, -.5f, 1f)
+            case EQUIPPED => renderWireInventory(damage, 0f, .0f, 0f, 1f)
+            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 1f, -.6f, -.4f, 2f)
+            case INVENTORY => renderWireInventory(damage, 0f, -.1f, 0f, 1f)
+            case _ =>
+        }
+    }
+
+    def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float)
+    {
+        val pdef = PipeDefs.values(meta)
+        if (pdef == null) return
+        TextureUtils.bindAtlas(0)
+        CCRenderState.reset()
+        CCRenderState.setDynamic()
+        CCRenderState.pullLightmap()
+        CCRenderState.startDrawing()
+
+        RenderPipe.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), new IconTransformation(pdef.sprites(0)))
+
+        CCRenderState.draw()
     }
 }

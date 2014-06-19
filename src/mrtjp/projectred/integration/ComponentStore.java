@@ -11,7 +11,7 @@ import codechicken.lib.vec.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.transmission.UVT;
-import mrtjp.projectred.transmission.WireModelGen$;
+import mrtjp.projectred.transmission.WireModelGen;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
@@ -510,7 +510,7 @@ public class ComponentStore
             double z2 = (rect.y+rect.h)/32D;
             double d = 0.0005-h/50D;// little offset for the wires go ontop of the border
             model.generateBlock(i, x1+d, 0.125, z1+d, x2-d, 0.125+h, z2-d, 1);
-            //MultiIconTransformation.setIconIndex(model, i, i+20, icon); //TODO ?
+            for (int v = i; v < i+20; v++) model.verts[v].uv.tex = icon;
         }
 
         @Override
@@ -759,7 +759,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(dynamicT(orient)).with(t), new IconTransformation(pointerIcon), LightModel.standardLightModel);
+            models[orient].render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(dynamicT(orient)).with(t), new IconTransformation(pointerIcon));
         }
     }
 
@@ -774,7 +774,7 @@ public class ComponentStore
                 int side = orient%24>>2;
                 int r = orient&3;
                 boolean reflect = orient >= 24;
-                boolean rotate = (r+WireModelGen$.MODULE$.reorientSide()[side])%4 >= 2;
+                boolean rotate = (r+WireModelGen.reorientSide()[side])%4 >= 2;
 
                 Transformation t = new RedundantTransformation();
                 if (reflect)
@@ -868,27 +868,16 @@ public class ComponentStore
     public static abstract class CellWireModel extends ComponentModel
     {
         public byte signal;
-        public boolean invColour;
 
         public static int signalColour(byte signal)
         {
             return (signal&0xFF)/2+60<<24|0xFF;
         }
 
-        @Override
-        public final void renderModel(Transformation t, int orient)
+        public IVertexOperation colourMult()
         {
-            if (invColour)
-            {
-                CCRenderState.setColour(signalColour(signal));
-                renderWire(t, orient, null);
-                CCRenderState.setColour(-1);
-            }
-            else
-                renderWire(t, orient, new ColourMultiplier(signalColour(signal)));
+            return ColourMultiplier.instance(signalColour(signal));
         }
-
-        public abstract void renderWire(Transformation t, int orient, IVertexOperation colour);
     }
 
     public static class CellTopWireModel extends CellWireModel
@@ -917,14 +906,14 @@ public class ComponentStore
         }
 
         @Override
-        public void renderWire(Transformation t, int orient, IVertexOperation colour)
+        public void renderModel(Transformation t, int orient)
         {
             IconTransformation icont = new IconTransformation(cellIcon);
-            top[orient].render(t, icont, colour);
+            top[orient].render(t, icont, colourMult());
             if ((conn&2) == 0)
-                right[orient].render(t, icont, colour);
+                right[orient].render(t, icont, colourMult());
             if ((conn&8) == 0)
-                left[orient].render(t, icont, colour);
+                left[orient].render(t, icont, colourMult());
         }
     }
 
@@ -939,9 +928,9 @@ public class ComponentStore
         }
 
         @Override
-        public void renderWire(Transformation t, int orient, IVertexOperation colour)
+        public void renderModel(Transformation t, int orient)
         {
-            bottom[orient].render(t, new IconTransformation(cellIcon), colour);
+            bottom[orient].render(t, new IconTransformation(cellIcon), colourMult());
         }
     }
 

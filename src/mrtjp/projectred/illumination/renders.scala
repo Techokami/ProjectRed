@@ -45,7 +45,6 @@ object RenderHalo
     @SubscribeEvent
     def onRenderWorldLast(event:RenderWorldLastEvent)
     {
-        val tess = Tessellator.instance
         val w = Minecraft.getMinecraft.theWorld
         val entity = Minecraft.getMinecraft.renderViewEntity
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
@@ -62,7 +61,7 @@ object RenderHalo
         while (i < max && it.hasNext)
         {
             val cc = it.next()
-            renderHalo(tess, w, cc)
+            renderHalo(w, cc)
             i += 1
         }
 
@@ -80,6 +79,7 @@ object RenderHalo
         GL11.glDisable(GL11.GL_CULL_FACE)
         GL11.glDepthMask(false)
         CCRenderState.reset()
+        CCRenderState.setDynamic()
         CCRenderState.startDrawing()
     }
 
@@ -95,17 +95,18 @@ object RenderHalo
         GL11.glDisable(GL11.GL_BLEND)
     }
 
-    private def renderHalo(tess:Tessellator, world:World, cc:LightCache)
+    private def renderHalo(world:World, cc:LightCache)
     {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z)
-        renderHalo(tess, cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
+        renderHalo(cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
     }
 
-    def renderHalo(tess:Tessellator, cuboid:Cuboid6, colour:Int, t:Transformation)
+    def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
     {
-        tess.setColorRGBA_I(PRColors.VALID_COLORS(colour).rgb, 128)
         CCRenderState.reset()
         CCRenderState.setPipeline(t)
+        CCRenderState.baseColour = PRColors.VALID_COLORS(colour).rgba
+        CCRenderState.alphaOverride = 128
         BlockRenderer.renderCuboid(cuboid, 0)
     }
 }
@@ -130,26 +131,26 @@ object LampTESR extends TileEntitySpecialRenderer with IItemRenderer
         def render(x:Double, y:Double, z:Double, s:Double)
         {
             val meta = item.getItemDamage
-            val icon = new IconTransformation(if (meta > 15) BlockLamp.on(meta - 16) else BlockLamp.off(meta))
+            val icon = new IconTransformation(if (meta > 15) BlockLamp.on(meta%16) else BlockLamp.off(meta))
 
             GL11.glPushMatrix()
             GL11.glTranslated(x, y, z)
             GL11.glScaled(s, s, s)
             TextureUtils.bindAtlas(0)
             CCRenderState.reset()
-            CCRenderState.useNormals = true
+            CCRenderState.setDynamic()
             CCRenderState.pullLightmap()
             CCRenderState.startDrawing()
 
             val t = new Translation(x, y, z)
             CCRenderState.setPipeline(t, icon)
-            BlockRenderer.renderCuboid(lBounds, 0)
+            BlockRenderer.renderCuboid(Cuboid6.full, 0)
             CCRenderState.draw()
 
             if (meta > 15)
             {
                 RenderHalo.prepareRenderState()
-                RenderHalo.renderHalo(Tessellator.instance, lBounds, meta-16, t)
+                RenderHalo.renderHalo(lBounds, meta%16, t)
                 RenderHalo.restoreRenderState()
             }
 
@@ -204,7 +205,7 @@ object RenderButton extends IItemRenderer
 
                 TextureUtils.bindAtlas(0)
                 CCRenderState.reset()
-                CCRenderState.useNormals = true
+                CCRenderState.setDynamic()
                 CCRenderState.pullLightmap()
                 CCRenderState.startDrawing()
 
@@ -213,7 +214,7 @@ object RenderButton extends IItemRenderer
 
                 CCRenderState.draw()
                 RenderHalo.prepareRenderState()
-                RenderHalo.renderHalo(Tessellator.instance, invLightBox, color, t)
+                RenderHalo.renderHalo(invLightBox, color, t)
                 RenderHalo.restoreRenderState()
                 GL11.glPopMatrix()
             }

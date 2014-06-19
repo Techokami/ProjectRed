@@ -21,9 +21,10 @@ trait TLightRenderHelper extends LightObject
         GL11.glPushMatrix()
         GL11.glTranslated(x, y, z)
         GL11.glScaled(s, s, s)
-        CCRenderState.reset()
         TextureUtils.bindAtlas(0)
-        CCRenderState.useNormals = true
+        CCRenderState.reset()
+        CCRenderState.setDynamic()
+        CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
     }
 
@@ -34,7 +35,7 @@ trait TLightRenderHelper extends LightObject
     def renderInvLightBox(color:Int, trans:Transformation)
     {
         RenderHalo.prepareRenderState()
-        RenderHalo.renderHalo(Tessellator.instance, getLBounds(0), color, trans)
+        RenderHalo.renderHalo(getLBounds(0), color, trans)
         RenderHalo.restoreRenderState()
     }
 
@@ -47,12 +48,23 @@ object LightObjLantern extends LightObject with TLightRenderHelper
     private val bounds = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D)
     private val lBounds = bounds.copy.expand(-1/64D)
 
+    override def getItemName = "projectred.illumination.lantern"
+    override def getType = "pr_lantern"
+
+    override def getBounds(side:Int) = bounds
+    override def getLBounds(side:Int) = lBounds
+
+    override def createPart = new BaseLightPart(this)
+
     val on = new Array[IIcon](16)
     val off = new Array[IIcon](16)
 
     val lModels = new Array[CCModel](7)
 
-    {//Obj parsing
+    @SideOnly(Side.CLIENT)
+    override def initClient()
+    {
+        super.initClient()
         val models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/lantern.obj"), 7, new InvertX)
         for ((s, c) <- models) c.apply(new Translation(0.5, 0, 0.5))
 
@@ -69,9 +81,9 @@ object LightObjLantern extends LightObject with TLightRenderHelper
 
         for (s <- 2 until 6)
         {
-            lModels(s) = CCModel.combine(Seq(
-                side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s))),
-                topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)))
+            lModels(s) = CCModel.combine(Seq(bulb,
+                side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center)),
+                topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center))
             ))
         }
 
@@ -81,14 +93,6 @@ object LightObjLantern extends LightObject with TLightRenderHelper
             c.shrinkUVs(0.0005)
         }
     }
-
-    override def getItemName = "projectred.illumination.lantern"
-    override def getType = "pr_lantern"
-
-    override def getBounds(side:Int) = bounds
-    override def getLBounds(side:Int) = lBounds
-
-    override def createPart = new BaseLightPart(this)
 
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
@@ -105,7 +109,7 @@ object LightObjLantern extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) on(color) else off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(new Translation(pos), icon)
+        lModels(part.side).render(pos.translation(), icon)
     }
 
     @SideOnly(Side.CLIENT)
@@ -138,22 +142,12 @@ object LightObjLantern extends LightObject with TLightRenderHelper
 
 object LightObjFixture extends LightObject with TLightRenderHelper
 {
-    private val lModels = new Array[CCModel](6)
-
     private val bounds = new Array[Cuboid6](6)
     private val lBounds = new Array[Cuboid6](6)
 
     {
-        val models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/fixture.obj"), 7, new InvertX)
         for (s <- 0 until 6)
         {
-            val m = models.get("base").copy
-            m.apply(new Translation(0.5, 0, 0.5))
-            m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
-            m.computeLighting(LightModel.standardLightModel)
-            m.shrinkUVs(0.0005)
-            lModels(s) = m
-
             val t = Rotation.sideRotations(s).at(Vector3.center)
             bounds(s) = new Cuboid6(2/16D, 0, 2/16D, 14/16D, 17/32D, 14/16D).apply(t)
             lBounds(s) = new Cuboid6(5/32D, 0, 5/32D, 27/32D, 17/32D, 27/32D).apply(t)
@@ -166,12 +160,30 @@ object LightObjFixture extends LightObject with TLightRenderHelper
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
 
+    private val lModels = new Array[CCModel](6)
+
+    @SideOnly(Side.CLIENT)
+    override def initClient()
+    {
+        super.initClient()
+        val models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/fixture.obj"), 7, new InvertX)
+        for (s <- 0 until 6)
+        {
+            val m = models.get("base").copy
+            m.apply(new Translation(0.5, 0, 0.5))
+            m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
+            m.computeLighting(LightModel.standardLightModel)
+            m.shrinkUVs(0.0005)
+            lModels(s) = m
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     override def render(part:BaseLightPart, color:Int, isOn:Boolean, pos:Vector3)
     {
         val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(new Translation(pos), icon)
+        lModels(part.side).render(pos.translation(), icon)
     }
 
     @SideOnly(Side.CLIENT)
@@ -202,22 +214,12 @@ object LightObjFixture extends LightObject with TLightRenderHelper
 
 object LightObjCage extends LightObject with TLightRenderHelper
 {
-    private val lModels = new Array[CCModel](6)
-
     private val bounds = new Array[Cuboid6](6)
     private val lBounds = new Array[Cuboid6](6)
 
     {
-        val models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/cagelamp.obj"), 7, new InvertX)
         for (s <- 0 until 6)
         {
-            val m = models.get("base").copy
-            m.apply(new Translation(0.5, 0, 0.5))
-            m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
-            m.computeLighting(LightModel.standardLightModel)
-            m.shrinkUVs(0.0005)
-            lModels(s) = m
-
             val t = Rotation.sideRotations(s).at(Vector3.center)
             bounds(s) = new Cuboid6(2/16D, 0, 2/16D, 14/16D, 11/16D, 14/16D).apply(t)
             lBounds(s) = new Cuboid6(4/16D, 0, 4/16D, 12/16D, 10/16D, 12/16D).apply(t)
@@ -230,12 +232,30 @@ object LightObjCage extends LightObject with TLightRenderHelper
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
 
+    private val lModels = new Array[CCModel](6)
+
+    @SideOnly(Side.CLIENT)
+    override def initClient()
+    {
+        super.initClient()
+        val models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/cagelamp.obj"), 7, new InvertX)
+        for (s <- 0 until 6)
+        {
+            val m = models.get("base").copy
+            m.apply(new Translation(0.5, 0, 0.5))
+            m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
+            m.computeLighting(LightModel.standardLightModel)
+            m.shrinkUVs(0.0005)
+            lModels(s) = m
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     override def render(part:BaseLightPart, color:Int, isOn:Boolean, pos:Vector3)
     {
         val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(new Translation(pos), icon)
+        lModels(part.side).render(pos.translation(), icon)
     }
 
     @SideOnly(Side.CLIENT)
@@ -257,7 +277,7 @@ object LightObjCage extends LightObject with TLightRenderHelper
             prepairInvRender(x, y, z, scale)
 
             val trans = new Translation(x, y, z)
-            lModels(6).render(trans, icon)
+            lModels(0).render(trans, icon)
             doInvRender()
             if (inverted) renderInvLightBox(color, trans)
 

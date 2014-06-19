@@ -1,7 +1,3 @@
-#zh_CN
-#If want to check more,U can visit here:http://tab.mcbbc.com/class.php?c=164 (A Chinese mod wiki of PR)
-
-#核心
 itemGroup.core=红石计划:核心
 
 item.projectred.core.part.partplate.name=电路板
@@ -60,14 +56,19 @@ item.projectred.core.part.upgrd_rx.name=右型X升级
 item.projectred.core.part.upgrd_ry.name=右型Y升级
 item.projectred.core.part.upgrd_rz.name=右型Z升级
 
+
 item.projectred.core.drawplate.name=起模板
 item.projectred.core.wiredebugger.name=调线工具
 item.projectred.core.screwdriver.name=螺丝刀
 item.projectred.core.routerutil.name=路由器工具
 item.projectred.core.datacard.name=数据卡
 
-#扩展
+
+
+
 itemGroup.expansion=红石计划:扩展
+
+
 
 itemGroup.transport=红石计划:运输
 
@@ -78,6 +79,9 @@ item.projectred.transportation.routingchip|3.name=物品终端芯片
 item.projectred.transportation.routingchip|4.name=物品抽取芯片
 item.projectred.transportation.routingchip|5.name=物品广播芯片
 item.projectred.transportation.routingchip|6.name=物品堆栈维护芯片
+item.projectred.transportation.routingchip|7.name=物品合成芯片
+
+item.projectred.transportation.cpu|0.name=路由网络CPU
 
 item.projectred.transportation.routerutil.name=路由器工具
 
@@ -87,38 +91,39 @@ item.projectred.transportation.pipe|2.name=路由接口管道
 item.projectred.transportation.pipe|3.name=路由合成管道
 item.projectred.transportation.pipe|4.name=路由需求管道
 item.projectred.transportation.pipe|5.name=路由扩展管道
+item.projectred.transportation.pipe|6.name=路由防火墙管道
 
-#勘矿
+
 itemGroup.exploration=红石计划:勘矿
 
-tile.projectred.exploration.ore.oreruby.name=红宝石矿石
-tile.projectred.exploration.ore.oresapphire.name=蓝宝石矿石
-tile.projectred.exploration.ore.oreperidot.name=橄榄石矿石
-tile.projectred.exploration.stone.stonemarble.name=大理石
-tile.projectred.exploration.stone.brickmarble.name=大理石砖
-tile.projectred.exploration.stone.cobblebasalt.name=玄武岩圆石
-tile.projectred.exploration.stone.stonebasalt.name=玄武岩
-tile.projectred.exploration.stone.brickbasalt.name=玄武岩砖
-tile.projectred.exploration.stone.storageruby.name=红宝石块
-tile.projectred.exploration.stone.storagesapphire.name=蓝宝石块
-tile.projectred.exploration.stone.storageperidot.name=橄榄石块
+tile.projectred.exploration.ore|0.name=红宝石矿石
+tile.projectred.exploration.ore|1.name=蓝宝石矿石
+tile.projectred.exploration.ore|2.name=橄榄石矿石
+tile.projectred.exploration.stone|0.name=大理石
+tile.projectred.exploration.stone|1.name=大理石砖
+tile.projectred.exploration.stone|2.name=玄武岩圆石
+tile.projectred.exploration.stone|3.name=玄武岩
+tile.projectred.exploration.stone|4.name=玄武岩砖
+tile.projectred.exploration.stone|5.name=红宝石块
+tile.projectred.exploration.stone|6.name=蓝宝石块
+tile.projectred.exploration.stone|7.name=橄榄石块
 item.projectred.exploration.woolgin.name=轧线器
-item.projectred.exploration.backpack.bpwhite.name=白色背包
-item.projectred.exploration.backpack.bporange.name=橙色背包
-item.projectred.exploration.backpack.bpmagenta.name=品红色背包
-item.projectred.exploration.backpack.bplightblue.name=浅蓝色背包
-item.projectred.exploration.backpack.bpyellow.name=黄色背包
-item.projectred.exploration.backpack.bplime.name=柠檬色背包
-item.projectred.exploration.backpack.bppink.name=粉色背包
-item.projectred.exploration.backpack.bpgrey.name=灰色背包
-item.projectred.exploration.backpack.bplightgrey.name=浅灰色背包
-item.projectred.exploration.backpack.bpcyan.name=青色背包
-item.projectred.exploration.backpack.bppurple.name=紫色背包
-item.projectred.exploration.backpack.bpblue.name=蓝色背包
-item.projectred.exploration.backpack.bpbrown.name=棕色背包
-item.projectred.exploration.backpack.bpgreen.name=绿色背包
-item.projectred.exploration.backpack.bpred.name=红色背包
-item.projectred.exploration.backpack.bpblack.name=黑色背包
+item.projectred.exploration.backpack|0.name=白色背包
+item.projectred.exploration.backpack|1.name=橙色背包
+item.projectred.exploration.backpack|2.name=品红色背包
+item.projectred.exploration.backpack|3.name=浅蓝色背包
+item.projectred.exploration.backpack|4.name=黄色背包
+item.projectred.exploration.backpack|5.name=柠檬色背包
+item.projectred.exploration.backpack|6.name=粉色背包
+item.projectred.exploration.backpack|7.name=灰色背包
+item.projectred.exploration.backpack|8.name=浅灰色背包
+item.projectred.exploration.backpack|9.name=青色背包
+item.projectred.exploration.backpack|10.name=紫色背包
+item.projectred.exploration.backpack|11.name=蓝色背包
+item.projectred.exploration.backpack|12.name=棕色背包
+item.projectred.exploration.backpack|13.name=绿色背包
+item.projectred.exploration.backpack|14.name=红色背包
+item.projectred.exploration.backpack|15.name=黑色背包
 item.projectred.exploration.axeruby.name=红宝石斧
 item.projectred.exploration.axesapphire.name=蓝宝石斧
 item.projectred.exploration.axeperidot.name=橄榄石斧
@@ -150,14 +155,14 @@ item.projectred.exploration.sickleruby.name=红宝石镰刀
 item.projectred.exploration.sicklesapphire.name=蓝宝石镰刀
 item.projectred.exploration.sickleperidot.name=橄榄石镰刀
 item.projectred.exploration.sicklediamond.name=钻石镰刀
-tile.projectred.exploration.stone.stonemarblewall.name=大理石墙壁
-tile.projectred.exploration.stone.brickmarblewall.name=大理石砖墙
-tile.projectred.exploration.stone.cobblebasaltwall.name=玄武岩圆石墙壁
-tile.projectred.exploration.stone.stonebasaltwall.name=玄武岩墙壁
-tile.projectred.exploration.stone.brickbasaltwall.name=玄武岩砖墙
-tile.projectred.exploration.stone.storagerubywall.name=红宝石墙壁
-tile.projectred.exploration.stone.storagesapphirewall.name=蓝宝石墙壁
-tile.projectred.exploration.stone.storageperidotwall.name=橄榄石墙壁
+tile.projectred.exploration.stonewalls|0.name=大理石墙壁
+tile.projectred.exploration.stonewalls|1.name=大理石砖墙
+tile.projectred.exploration.stonewalls|2.name=玄武岩圆石墙壁
+tile.projectred.exploration.stonewalls|3.name=玄武岩墙壁
+tile.projectred.exploration.stonewalls|4.name=玄武岩砖墙
+tile.projectred.exploration.stonewalls|5.name=红宝石墙壁
+tile.projectred.exploration.stonewalls|6.name=蓝宝石墙壁
+tile.projectred.exploration.stonewalls|7.name=橄榄石墙壁
 tile.projectred.exploration.dyeleaf|0.name=白色浸染树叶
 tile.projectred.exploration.dyeleaf|1.name=橙色浸染树叶
 tile.projectred.exploration.dyeleaf|2.name=品红色浸染树叶
@@ -191,7 +196,10 @@ tile.projectred.exploration.dyesapling|13.name=绿色浸染树苗
 tile.projectred.exploration.dyesapling|14.name=红色浸染树苗
 tile.projectred.exploration.dyesapling|15.name=黑色浸染树苗
 
-#照明
+
+
+
+
 itemGroup.ill=红石计划:照明
 
 item.projectred.illumination.lantern|0.name=白色灯笼
@@ -226,38 +234,6 @@ item.projectred.illumination.lantern.inv|12.name=反相棕色灯笼
 item.projectred.illumination.lantern.inv|13.name=反相绿色灯笼
 item.projectred.illumination.lantern.inv|14.name=反相红色灯笼
 item.projectred.illumination.lantern.inv|15.name=反相黑色灯笼
-item.projectred.illumination.lamp|0.name=白色灯
-item.projectred.illumination.lamp|1.name=橙色灯
-item.projectred.illumination.lamp|2.name=品红色灯
-item.projectred.illumination.lamp|3.name=浅蓝色灯
-item.projectred.illumination.lamp|4.name=黄色灯
-item.projectred.illumination.lamp|5.name=柠檬色灯
-item.projectred.illumination.lamp|6.name=粉色灯
-item.projectred.illumination.lamp|7.name=灰色灯
-item.projectred.illumination.lamp|8.name=浅灰色灯
-item.projectred.illumination.lamp|9.name=青色灯
-item.projectred.illumination.lamp|10.name=紫色灯
-item.projectred.illumination.lamp|11.name=蓝色灯
-item.projectred.illumination.lamp|12.name=棕色灯
-item.projectred.illumination.lamp|13.name=绿色灯
-item.projectred.illumination.lamp|14.name=红色灯
-item.projectred.illumination.lamp|15.name=黑色灯
-item.projectred.illumination.lamp.inv|0.name=反相白色灯
-item.projectred.illumination.lamp.inv|1.name=反相橙色灯
-item.projectred.illumination.lamp.inv|2.name=反相品红色灯
-item.projectred.illumination.lamp.inv|3.name=反相浅蓝色灯
-item.projectred.illumination.lamp.inv|4.name=反相黄色灯
-item.projectred.illumination.lamp.inv|5.name=反相柠檬色灯
-item.projectred.illumination.lamp.inv|6.name=反相粉色灯
-item.projectred.illumination.lamp.inv|7.name=反相灰色灯
-item.projectred.illumination.lamp.inv|8.name=反相浅灰色灯
-item.projectred.illumination.lamp.inv|9.name=反相青色灯
-item.projectred.illumination.lamp.inv|10.name=反相紫色灯
-item.projectred.illumination.lamp.inv|11.name=反相蓝色灯
-item.projectred.illumination.lamp.inv|12.name=反相棕色灯
-item.projectred.illumination.lamp.inv|13.name=反相绿色灯
-item.projectred.illumination.lamp.inv|14.name=反相红色灯
-item.projectred.illumination.lamp.inv|15.name=反相黑色灯
 tile.projectred.illumination.lamp|0.name=白色灯
 tile.projectred.illumination.lamp|1.name=橙色灯
 tile.projectred.illumination.lamp|2.name=品红色灯
@@ -274,22 +250,22 @@ tile.projectred.illumination.lamp|12.name=棕色灯
 tile.projectred.illumination.lamp|13.name=绿色灯
 tile.projectred.illumination.lamp|14.name=红色灯
 tile.projectred.illumination.lamp|15.name=黑色灯
-tile.projectred.illumination.lamp.inv|0.name=反相白色灯
-tile.projectred.illumination.lamp.inv|1.name=反相橙色灯
-tile.projectred.illumination.lamp.inv|2.name=反相品红色灯
-tile.projectred.illumination.lamp.inv|3.name=反相浅蓝色灯
-tile.projectred.illumination.lamp.inv|4.name=反相黄色灯
-tile.projectred.illumination.lamp.inv|5.name=反相柠檬色灯
-tile.projectred.illumination.lamp.inv|6.name=反相粉色灯
-tile.projectred.illumination.lamp.inv|7.name=反相灰色灯
-tile.projectred.illumination.lamp.inv|8.name=反相浅灰色灯
-tile.projectred.illumination.lamp.inv|9.name=反相青色灯
-tile.projectred.illumination.lamp.inv|10.name=反相紫色灯
-tile.projectred.illumination.lamp.inv|11.name=反相蓝色灯
-tile.projectred.illumination.lamp.inv|12.name=反相棕色灯
-tile.projectred.illumination.lamp.inv|13.name=反相绿色灯
-tile.projectred.illumination.lamp.inv|14.name=反相红色灯
-tile.projectred.illumination.lamp.inv|15.name=反相黑色灯
+tile.projectred.illumination.lamp|16.name=反相白色灯
+tile.projectred.illumination.lamp|17.name=反相橙色灯
+tile.projectred.illumination.lamp|18.name=反相品红色灯
+tile.projectred.illumination.lamp|19.name=反相浅蓝色灯
+tile.projectred.illumination.lamp|20.name=反相黄色灯
+tile.projectred.illumination.lamp|21.name=反相柠檬色灯
+tile.projectred.illumination.lamp|22.name=反相粉色灯
+tile.projectred.illumination.lamp|23.name=反相灰色灯
+tile.projectred.illumination.lamp|24.name=反相浅灰色灯
+tile.projectred.illumination.lamp|25.name=反相青色灯
+tile.projectred.illumination.lamp|26.name=反相紫色灯
+tile.projectred.illumination.lamp|27.name=反相蓝色灯
+tile.projectred.illumination.lamp|28.name=反相棕色灯
+tile.projectred.illumination.lamp|29.name=反相绿色灯
+tile.projectred.illumination.lamp|30.name=反相红色灯
+tile.projectred.illumination.lamp|31.name=反相黑色灯
 item.projectred.illumination.lightbutton|0.name=白色照明按钮
 item.projectred.illumination.lightbutton|1.name=橙色照明按钮
 item.projectred.illumination.lightbutton|2.name=品红色照明按钮
@@ -371,7 +347,10 @@ item.projectred.illumination.fixture.inv|13.name=反相绿色灯具
 item.projectred.illumination.fixture.inv|14.name=反相红色灯具
 item.projectred.illumination.fixture.inv|15.name=反相黑色灯具
 
-#逻辑
+
+
+
+
 itemGroup.int=红石计划:逻辑
 
 item.projectred.integration.gate|0.name=或门
@@ -403,7 +382,9 @@ item.projectred.integration.gate|25.name=缓冲单元
 item.projectred.integration.gate|26.name=比较器
 item.projectred.integration.gate|27.name=与单元 
 
-#线缆
+
+
+
 itemGroup.trans=红石计划:线缆
 
 item.projectred.transmission.wire|0.name=红色合金丝
@@ -440,6 +421,7 @@ item.projectred.transmission.wire|30.name=棕色集束线缆
 item.projectred.transmission.wire|31.name=绿色集束线缆
 item.projectred.transmission.wire|32.name=红色集束线缆
 item.projectred.transmission.wire|33.name=黑色集束线缆
+item.projectred.transmission.wire|34.name=100V电力线缆
 item.projectred.transmission.framewire|0.name=框架红色合金丝
 item.projectred.transmission.framewire|1.name=框架白色绝缘线缆
 item.projectred.transmission.framewire|2.name=框架橙色绝缘线缆
@@ -458,8 +440,12 @@ item.projectred.transmission.framewire|14.name=框架绿色绝缘线缆
 item.projectred.transmission.framewire|15.name=框架红色绝缘线缆
 item.projectred.transmission.framewire|16.name=框架黑色绝缘线缆
 item.projectred.transmission.framewire|17.name=框架集束线缆
+item.projectred.transmission.framewire|34.name=框架100V电力线缆
+
+
+
 
 itemGroup.compat=红石计划:兼容
 
-tile.projectred.compatability.liqredstone.name=液态红石
-tile.projectred.compatability.liqcondredmetal.name=熔融红石合金
+tile.projectred.compatibility.liqredstone.name=液态红石
+tile.projectred.compatibility.liqcondredmetal.name=熔融红石合金

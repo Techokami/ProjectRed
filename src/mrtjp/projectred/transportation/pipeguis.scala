@@ -14,6 +14,7 @@ import mrtjp.projectred.core.libmc.gui._
 import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
 import net.minecraft.entity.player.EntityPlayer
 import codechicken.lib.data.MCDataInput
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 
 class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends WidgetGui(container, 176, 220)
 {
@@ -41,11 +42,11 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
         var color = 0
         ResourceLib.guiExtras.bind()
 
-        for ((x, 7) <- GuiLib.createSlotGrid(8, 108, 9, 1, 0, 0))
+        for ((x, y) <- GuiLib.createSlotGrid(8, 108, 9, 1, 0, 0))
         {
             GL11.glColor4f(1, 1, 1, 1)
             drawTexturedModalRect(x, y, 1, 11, 16, 16)
-            Gui.drawRect(x, y, x+8, y+2, PRColors.get(color).argb)
+            Gui.drawRect(x+4, y-2, x+4+8, y, PRColors.get(color).argb)
             color += 1
         }
     }
@@ -71,6 +72,7 @@ object GuiCraftingPipe extends TGuiBuilder
 {
     override def getID = GuiIDs.craftingPipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         PRLib.getMultiPart(player.worldObj, data.readCoord(), 6) match
@@ -109,6 +111,7 @@ object GuiExtensionPipe extends TGuiBuilder
 {
     override def getID = GuiIDs.extensionPipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val coord = data.readCoord()
@@ -153,6 +156,7 @@ object GuiInterfacePipe extends TGuiBuilder
 {
     override def getID = GuiIDs.interfacePipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val coord = data.readCoord()
@@ -317,8 +321,7 @@ class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 
     def receiveContentList(content:Map[ItemKey, Int])
     {
-        itemList.setDisplayList(
-            content.map(p => ItemKeyStack(p._1, p._2)).toVector.sorted)
+        itemList.setDisplayList(content.map(p => ItemKeyStack(p._1, p._2)).toVector.sorted)
     }
 }
 
@@ -413,6 +416,7 @@ object GuiFirewallPipe extends TGuiBuilder
 {
     override def getID = GuiIDs.firewallPipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val coord = data.readCoord()

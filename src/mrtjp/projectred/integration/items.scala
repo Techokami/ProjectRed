@@ -7,7 +7,7 @@ import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.world.World
 import codechicken.lib.vec.{Translation, Scale, Vector3, BlockCoord}
-import mrtjp.projectred.core.libmc.BasicWireUtils
+import mrtjp.projectred.core.libmc.WireLib
 import net.minecraftforge.common.util.ForgeDirection
 import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList}
@@ -26,7 +26,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
         val onPos = pos.copy.offset(side^1)
-        if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) return null
+        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) return null
 
         val gtype = EnumGate.VALID_GATES(item.getItemDamage)
         if (!gtype.implemented) return null
@@ -77,9 +77,8 @@ object GateItemRenderer extends IItemRenderer
         if (!EnumGate.VALID_GATES(meta).implemented) return
         TextureUtils.bindAtlas(0)
         CCRenderState.reset()
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
-        CCRenderState.setColour(-1)
         RenderGate.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), meta)
     }
 }

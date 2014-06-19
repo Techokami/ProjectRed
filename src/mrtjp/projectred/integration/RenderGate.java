@@ -4,7 +4,6 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
 import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
@@ -61,7 +60,7 @@ public class RenderGate
     {
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
-        r.renderStatic(new Translation(pos), gate.orientation&0xFF);
+        r.renderStatic(pos.translation(), gate.orientation&0xFF);
     }
 
     public static void renderDynamic(GatePart gate, Vector3 pos, float frame)
@@ -876,7 +875,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
@@ -932,7 +931,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
@@ -993,7 +992,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }
@@ -1069,7 +1068,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }
@@ -1179,21 +1178,16 @@ public class RenderGate
         public void prepareInv()
         {
             bottomWire.signal = 0;
-            bottomWire.invColour = true;
             topWire.signal = 0;
-            topWire.invColour = true;
             topWire.conn = 0;
         }
 
         @Override
         public void prepare(ArrayGatePart part)
         {
-            super.prepare(part);
             bottomWire.signal = part.signal1;
-            bottomWire.invColour = false;
             topWire.signal = part.signal2;
             topWire.conn = ArrayCommons.topWireConn(part);
-            topWire.invColour = false;
         }
     }
 
@@ -1339,17 +1333,18 @@ public class RenderGate
 
         public ANDCell()
         {
+            models.clear();
+            models.add(topWire);
+            models.add(new BaseComponentModel());
+            models.add(new CellFrameModel());
             models.addAll(Arrays.asList(wires));
             models.addAll(Arrays.asList(torches));
-            models.add(topWire);
-            models.add(new CellFrameModel());
         }
 
         @Override
         public void prepareInv()
         {
             topWire.signal = 0;
-            topWire.invColour = true;
             topWire.conn = 0;
             torches[0].on = true;
             torches[1].on = false;
@@ -1361,10 +1356,8 @@ public class RenderGate
         @Override
         public void prepare(RowGatePart part)
         {
-            super.prepare(part);
             topWire.signal = part.signal;
             topWire.conn = ArrayCommons.topWireConn(part);
-            topWire.invColour = false;
             torches[0].on = (part.state&4) == 0;
             torches[1].on = (part.state&0x10) != 0;
             torches[2].on = (part.state&0xA) == 0;

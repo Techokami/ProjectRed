@@ -32,6 +32,8 @@ Thumbs.db
 /logs/
 options.txt
 /saves/
+#sbt-eclipse junk
+/target/
 #Modeling stuff
 *.blend1
 *.blend2
@@ -42,3 +44,12 @@ options.txt
 /crash-reports/
 /asm/
 /mods/
+*.log
+#Server stuff
+banned-ips.txt
+banned-players.txt
+ops.txt
+server.properties
+servers.dat
+white-list.txt
+/world/

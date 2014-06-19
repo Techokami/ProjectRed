@@ -22,7 +22,8 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
     override def fontRenderer = mcInst.fontRenderer
     override def getZ = zLevel
 
-    override val bounds = new Rect().setMin(guiLeft, guiTop).setWH(xSize, ySize)
+    // Lazy because initGui has to be called before this
+    override lazy val bounds = new Rect().setMin(guiLeft, guiTop).setWH(xSize, ySize)
 
     var prevGui:GuiScreen = null
     def setJumpBack(p:GuiScreen){prevGui = p}
@@ -82,8 +83,12 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
 
     final override def keyTyped(c:Char, i:Int)
     {
-        if (c == 1 && forwardClosing) super.keyTyped(c, i) //esc
-        if ((2 to 10 contains i) && !(blockedHotkeyNumbers contains i-1))
+        if (i == 1) //esc
+        {
+            if (prevGui != null) jumpTo(prevGui, prevGui.isInstanceOf[GuiContainer])
+            else if (forwardClosing) super.keyTyped(c, i)
+        }
+        else if ((2 to 10 contains i) && !(blockedHotkeyNumbers contains i-1))
             super.keyTyped(c, i) //number for slot moving
         keyPressed(c, i, false)
     }
@@ -91,17 +96,20 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
     def forwardClosing = true
     def blockedHotkeyNumbers:Set[Int] = Set()
 
+    /**
+     * Front/back rendering overridden, because at root, we dont push the children to our pos, because its zero.
+     */
     private var lastFrame = 0.0F
     final override def drawGuiContainerBackgroundLayer(f:Float, mx:Int, my:Int)
     {
         lastFrame = f
-        translateTo()
-        drawBack(new Point(mx, my), f)
-        translateFrom()
+        val mouse = new Point(mx, my)
+        rootDrawBack(mouse, f)
     }
 
     final override def drawGuiContainerForegroundLayer(mx:Int, my:Int)
     {
-        drawFront(new Point(mx, my), lastFrame)
+        val mouse = new Point(mx, my)
+        rootDrawFront(mouse, lastFrame)
     }
 }
